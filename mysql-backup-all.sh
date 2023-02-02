@@ -15,10 +15,10 @@ source /root/mysql-backup.auth
 backupuser=$(eval echo ${backupuser} | base64 --decode)
 secret=$(eval echo ${secret} | base64 --decode)
 
-# Define databases for backup and do backup in a loop
+# Define and count databases for backup and do backup in a loop
 declare -a dbname=($(/usr/bin/mysql -h $bkp_sql_host -u $backupuser -p$secret --batch -e "show databases;" | tail -n +2))
 dbcount=${#dbname[@]}
-echo "$(date +"%Y-%m-%d %T") Info: ${#dbname[@]} databases will be backuped." >> $bkp_log_file
+echo "$(date +"%Y-%m-%d %T") Info: $dbcount databases will be backuped." >> $bkp_log_file
 
 for i in "${dbname[@]}"
 do
@@ -43,7 +43,7 @@ find $bkp_dir_local -type f -name "$bkp_file_regex" -mtime +1 -exec mv {} $bkp_d
 
 # Count backups on remote share and calculate minimum number of backups at remote storage
 archcount="$(ls -l $bkp_dir_remote | wc -l)"
-archlimit=$($dbcount * $bkp_purge_period)
+archlimit="$($dbcount * $bkp_purge_period)"
 
 if [[ $archcount -gt $archlimit ]]
         then
