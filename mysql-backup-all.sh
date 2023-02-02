@@ -43,7 +43,7 @@ find $bkp_dir_local -type f -name "$bkp_file_regex" -mtime +1 -exec mv {} $bkp_d
 
 # Count backups on remote share and calculate minimum number of backups at remote storage
 archcount="$(ls -l $bkp_dir_remote | wc -l)"
-archlimit="$($dbcount * $bkp_purge_period)"
+archlimit=$((dbcount * bkp_purge_period))
 
 if [[ $archcount -gt $archlimit ]]
         then
